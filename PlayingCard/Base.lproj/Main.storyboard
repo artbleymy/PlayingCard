@@ -21,10 +21,14 @@
                             <view opaque="NO" contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="YzC-kg-7Bm" customClass="PlayingCardView" customModule="PlayingCard" customModuleProvider="target">
                                 <rect key="frame" x="16" y="59" width="343" height="549"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="750" constant="800" id="1EU-8p-CVg"/>
                                     <constraint firstAttribute="width" secondItem="YzC-kg-7Bm" secondAttribute="height" multiplier="5:8" id="6PK-je-cVv"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="lDH-fW-g7v" appends="YES" id="cSZ-TR-Zsz"/>
+                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.75679980660000001" green="1" blue="0.89785136430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -38,8 +42,16 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="playingCardView" destination="YzC-kg-7Bm" id="2vY-nI-cKH"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="lDH-fW-g7v">
+                    <connections>
+                        <action selector="flipCard:" destination="BYZ-38-t0r" id="laH-uA-9vT"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="136.80000000000001" y="132.68365817091455"/>
         </scene>

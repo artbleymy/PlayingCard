@@ -8,11 +8,32 @@
 
 import UIKit
 
+//allow you to see default view in storyboard
+//@IBDesignable
 class PlayingCardView: UIView {
+    //allow you to change values in inspector
+//    @IBInspectable
+    var rank: Int = 11 { didSet {setNeedsDisplay(); setNeedsLayout()}}
     
-    var rank: Int = 6 { didSet {setNeedsDisplay(); setNeedsLayout()}}
+//    @IBInspectable
     var suit: String = "♥️" { didSet {setNeedsDisplay(); setNeedsLayout()}}
-    var isFaceUp: Bool = false
+    
+//    @IBInspectable
+    var isFaceUp: Bool = true { didSet {setNeedsDisplay(); setNeedsLayout()}}
+    
+    var faceCardScale: CGFloat = SizeRatio.faceCardImageSizeToBoundSize { didSet {setNeedsDisplay(); setNeedsLayout()}}
+    
+    @objc func adjustFaceCardScale(byHandlingGestureRecognizedBy recognizer: UIPinchGestureRecognizer ) {
+        print(recognizer.state)
+        switch  recognizer.state {
+        case .changed, .ended:
+            faceCardScale *= recognizer.scale
+            recognizer.scale = 1.0
+        default:
+            print(2)
+            break
+        }
+    }
     
 // return a string, that centered
     private func centeredAttributedString(_ string: String, fontSize: CGFloat ) -> NSAttributedString {
@@ -114,7 +135,7 @@ class PlayingCardView: UIView {
         
         if isFaceUp {
             if let faceCardImage = UIImage(named: rankString + suit){
-                faceCardImage.draw(in: bounds.zoom(by: SizeRatio.faceCardImageSizeToBoundSize))
+                faceCardImage.draw(in: bounds.zoom(by: faceCardScale))
             } else {
                 drawPips()
             }
@@ -160,10 +181,10 @@ extension PlayingCardView {
 //MARK: - Extension of CGRect
 extension CGRect {
     var leftHalf: CGRect {
-        return CGRect(x: minX, y: minY, width: width / 2, height: height / 2)
+        return CGRect(x: minX, y: minY, width: width / 2, height: height)
     }
     var righHalf: CGRect {
-        return CGRect(x: midX, y: midY, width: width / 2, height: height / 2)
+        return CGRect(x: midX, y: minY, width: width / 2, height: height)
     }
     func inset(by size: CGSize) -> CGRect {
         return insetBy(dx: size.width, dy: size.height)
