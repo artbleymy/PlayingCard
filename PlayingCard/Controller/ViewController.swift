@@ -9,8 +9,13 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
     var deck = PlayingCardDeck()
+    
+    lazy var animator = UIDynamicAnimator(referenceView: view)
+    
+    lazy var cardBehavior = CardBehavior(in: animator)
+    
     
     @IBOutlet weak var playingCardView: PlayingCardView! {
         didSet {
@@ -23,15 +28,15 @@ class ViewController: UIViewController {
         }
     }
     
-//    @IBAction func flipCard(_ sender: UITapGestureRecognizer) {
-//        switch sender.state {
-//        case .ended:
-//            playingCardView.isFaceUp = !playingCardView.isFaceUp
-//        default:
-//            break
-//        }
-//
-//    }
+    //    @IBAction func flipCard(_ sender: UITapGestureRecognizer) {
+    //        switch sender.state {
+    //        case .ended:
+    //            playingCardView.isFaceUp = !playingCardView.isFaceUp
+    //        default:
+    //            break
+    //        }
+    //
+    //    }
     
     
     @objc func nextCard() {
@@ -42,6 +47,7 @@ class ViewController: UIViewController {
     }
     
     @IBOutlet private var cardViews: [PlayingCardView]!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,11 +63,19 @@ class ViewController: UIViewController {
             cardView.rank = card.rank.order
             cardView.suit = card.suit.rawValue
             cardView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(flipCard(_:))))
+            cardBehavior.addItem(cardView)
+            cardBehavior.addItem(cardView)
+            
         }
+        
     }
     
     private var faceUpCardViews: [PlayingCardView] {
-        return cardViews.filter { $0.isFaceUp && !$0.isHidden}
+        return cardViews.filter { $0.isFaceUp &&
+            !$0.isHidden &&
+            $0.transform != CGAffineTransform.identity.scaledBy(x: 3.0, y: 3.0)  &&
+            $0.alpha == 1
+        }
     }
     
     private var faceUpCardViewsMatch: Bool {
@@ -70,34 +84,40 @@ class ViewController: UIViewController {
             faceUpCardViews[0].suit == faceUpCardViews[1].suit
     }
     
+    var lastChoosenCardView: PlayingCardView?
+    
     @objc func flipCard(_ recognizer: UITapGestureRecognizer) {
         switch recognizer.state {
         case .ended:
-            if let chooseCardView =  recognizer.view as? PlayingCardView {
+            if let chooseCardView =  recognizer.view as? PlayingCardView, faceUpCardViews.count < 2 {
+                lastChoosenCardView = chooseCardView
+                //stop card when faceup
+                cardBehavior.removeItem(chooseCardView)
                 UIView.transition(with: chooseCardView,
-                                  duration: 0.6,
+                                  duration: 0.5,
                                   options: [.transitionFlipFromLeft],
                                   animations: {chooseCardView.isFaceUp = !chooseCardView.isFaceUp },
                                   completion: { finished in
+                                    let cardsToAnimate = self.faceUpCardViews
                                     if self.faceUpCardViewsMatch {
                                         UIViewPropertyAnimator.runningPropertyAnimator(
                                             withDuration: 0.6,
                                             delay: 0,
                                             options: [],
-                                            animations: { self.faceUpCardViews.forEach({
-                                                $0.transform = CGAffineTransform.identity.scaledBy(x: 3.0, y: 3.0)
+                                            animations: { cardsToAnimate.forEach({
+                                                $0.transform = CGAffineTransform.identity.scaledBy(x: 2.0, y: 2.0)
                                             }) },
                                             completion: {position in
                                                 UIViewPropertyAnimator.runningPropertyAnimator(
                                                     withDuration: 0.75,
                                                     delay: 0.6,
                                                     options: [],
-                                                    animations: { self.faceUpCardViews.forEach({
+                                                    animations: { cardsToAnimate.forEach({
                                                         $0.transform = CGAffineTransform.identity.scaledBy(x: 0.1, y: 0.1)
                                                         $0.alpha = 0.0
                                                     }) },
                                                     completion: {position in
-                                                        self.faceUpCardViews.forEach {
+                                                        cardsToAnimate.forEach {
                                                             $0.isHidden = true
                                                             $0.alpha = 1
                                                             $0.transform = .identity
@@ -106,18 +126,23 @@ class ViewController: UIViewController {
                                                 )
                                                 
                                         })
-                                    } else {
                                         //flip all cards if open 2 cards
-                                        if self.faceUpCardViews.count == 2 {
-                                            self.faceUpCardViews.forEach {cardView in
-                                                UIView.transition(
-                                                    with: cardView,
-                                                    duration: 0.6,
-                                                    options: [.transitionFlipFromLeft],
-                                                    animations: {cardView.isFaceUp = false },
-                                                    completion: nil)}
+                                    } else if cardsToAnimate.count == 2, chooseCardView == self.lastChoosenCardView {
+                                        cardsToAnimate.forEach {cardView in
+                                            UIView.transition(
+                                                with: cardView,
+                                                duration: 0.5,
+                                                options: [.transitionFlipFromLeft],
+                                                animations: {cardView.isFaceUp = false },
+                                                completion: {finished in
+                                                    self.cardBehavior.addItem(cardView)
+                                            })}
+                                    } else {
+                                        if !chooseCardView.isFaceUp {
+                                            self.cardBehavior.addItem(chooseCardView)
                                         }
                                     }
+                                    
                                     
                 })
             }
@@ -125,6 +150,19 @@ class ViewController: UIViewController {
             break
         }
     }
-
+    
 }
 
+//MARK:  - extend Int class for getting random Int value
+extension CGFloat{
+    
+    var arc4random: CGFloat {
+        if self > 0 {return CGFloat(arc4random_uniform(UInt32(self)))
+        } else if self < 0 {
+            return -CGFloat(arc4random_uniform(UInt32(abs(self))))
+        } else {
+            return 0
+        }
+        
+    }
+}
