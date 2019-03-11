@@ -60,11 +60,9 @@
 		856F3039223044DC00AC8C77 /* PlayingCard */ = {
 			isa = PBXGroup;
 			children = (
-				856F304D2230457600AC8C77 /* PlayingCard.swift */,
-				856F304F2230490400AC8C77 /* PlayingCardDeck.swift */,
-				856F303C223044DC00AC8C77 /* ViewController.swift */,
-				856F305122311ADF00AC8C77 /* PlayingCardView.swift */,
-				856F303E223044DC00AC8C77 /* Main.storyboard */,
+				85EA3BA222368F8800A20D6B /* Controller */,
+				85EA3BA122368F8300A20D6B /* View */,
+				85EA3BA022368F7900A20D6B /* Model */,
 				856F3041223044DF00AC8C77 /* Assets.xcassets */,
 				856F304C223044FF00AC8C77 /* Supporting Files */,
 				856F3046223044DF00AC8C77 /* Info.plist */,
@@ -79,6 +77,32 @@
 				856F3043223044DF00AC8C77 /* LaunchScreen.storyboard */,
 			);
 			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		85EA3BA022368F7900A20D6B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				856F304F2230490400AC8C77 /* PlayingCardDeck.swift */,
+				856F304D2230457600AC8C77 /* PlayingCard.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		85EA3BA122368F8300A20D6B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				856F303E223044DC00AC8C77 /* Main.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		85EA3BA222368F8800A20D6B /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				856F303C223044DC00AC8C77 /* ViewController.swift */,
+				856F305122311ADF00AC8C77 /* PlayingCardView.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
